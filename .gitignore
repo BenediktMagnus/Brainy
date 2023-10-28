@@ -8,6 +8,7 @@ package-lock.json
 # No editor specific configs:
 .vscode
 .idea
+*.code-workspace
 
 # Ignore Mac files:
 .DS_Store
@@ -16,6 +17,7 @@ package-lock.json
 # No builds:
 compiler/bin/**/*
 runtime/bin/**/*
+compiler/obj/**/*
 bin/**/*
 tmp/**/*
 out/**/*

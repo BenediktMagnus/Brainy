@@ -1,0 +1,55 @@
+{
+    "name": "brainfuck-llvm-compiler",
+    "description": "A Brainfuck compiler that utilises LLVM.",
+    "author": "Benedikt Magnus",
+    "version": "0.1.0-dev",
+    "license": "MIT",
+    "keywords": [
+        "Brainfuck",
+        "compiler"
+    ],
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/BenediktMagnus/BrainfuckLLVM"
+    },
+    "bugs": {
+        "url": "https://github.com/BenediktMagnus/BrainfuckLLVM/issues"
+    },
+    "bin": {
+        "phc": "./bin/main.js"
+    },
+    "engines": {
+        "node": ">=18.18.0"
+    },
+    "dependencies": {
+        "chalk": "4.1.0",
+        "commander": "11.1.0"
+    },
+    "devDependencies": {
+        "@types/node": "18.18.7",
+        "@typescript-eslint/eslint-plugin": "6.9.0",
+        "@typescript-eslint/parser": "6.9.0",
+        "eslint": "8.52.0",
+        "eslint-config-phosphor": "^1.1.0",
+        "typescript": "5.2.2"
+    },
+    "bundledDependencies": [
+        "chalk",
+        "commander"
+    ],
+    "files": [
+        "bin",
+        "LICENSE",
+        "README.md"
+    ],
+    "main": "bin/main.js",
+    "scripts": {
+        "build": "tsc",
+        "clean": "rm -rf bin",
+        "fullCheck": "npm run build && npm run lint",
+        "lint": "eslint \"src/**/*.ts\"",
+        "prepack": "npm run clean && tsc -p tsconfig.release.json",
+        "start": "node bin/main.js"
+    },
+    "private": true
+}
