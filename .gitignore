@@ -1,0 +1,21 @@
+# No node_modules:
+node_modules/
+compiler/node_modules/
+
+# No package-lock.json (package manager specific):
+package-lock.json
+
+# No editor specific configs:
+.vscode
+.idea
+
+# Ignore Mac files:
+.DS_Store
+*.DS_Store
+
+# No builds:
+compiler/bin/**/*
+runtime/bin/**/*
+bin/**/*
+tmp/**/*
+out/**/*
