@@ -6,7 +6,7 @@
  * Initialise the working memory.
  * @return The pointer to the start of the memory.
  */
-void* initialise ()
+UInt8* initialise ()
 {
     const UInt memorySize = 30000;
 
