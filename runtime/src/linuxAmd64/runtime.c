@@ -21,19 +21,6 @@ void* initialise ()
 }
 
 /**
- * Exit the programme.
- * Will not return.
- */
-void exit ()
-{
-    UInt returnCode = 0;
-
-    Int result;
-
-    asm volatile ("syscall" : "=a" (result) : "D" (returnCode), "a" (SyscodeExit));
-}
-
-/**
  * Read a character from the standard input.
  * @return The character that has been read in.
  */
@@ -83,4 +70,19 @@ void write (UInt8 character)
                             : "rcx", "r11");
 
     // TODO: Check if result is an error (-1) or less than the text size.
+}
+
+/**
+ * Exit the programme.
+ * Will not return.
+ */
+void exit ()
+{
+    write('\n');
+
+    UInt returnCode = 0;
+
+    Int result;
+
+    asm volatile ("syscall" : "=a" (result) : "D" (returnCode), "a" (SyscodeExit));
 }
