@@ -70,10 +70,11 @@ UInt8 read ()
  */
 void write (UInt8 character)
 {
-    UInt size = 1;
-    UInt8* text = &character;
+    const UInt size = 1;
 
-    Int fileDescriptor = 1; // File descriptor ID for stdout
+    volatile UInt8 text[] = { character };
+
+    const Int fileDescriptor = 1; // File descriptor ID for stdout
 
     Int result;
 
