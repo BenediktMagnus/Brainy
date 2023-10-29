@@ -1,5 +1,6 @@
-import * as Diagnostic from '../diagnostic';
 import * as SyntaxNodes from './syntaxNodes';
+import { DiagnosticCode } from '../diagnostic/diagnosticCodes';
+import { DiagnosticError } from '../diagnostic/diagnosticError';
 import { Token } from '../lexer/token';
 import { TokenKind } from '../lexer/tokenKind';
 import { SyntaxKind } from './syntaxKind';
@@ -83,8 +84,8 @@ export class Parser
             case TokenKind.LoopStart:
                 return this.parseLoop();
             case TokenKind.LoopEnd:
-                throw new Diagnostic.Error(
-                    Diagnostic.Codes.LoopEndTokenBeforeLoopStartToken,
+                throw new DiagnosticError(
+                    DiagnosticCode.LoopEndTokenBeforeLoopStartToken,
                     `Found loop end token before loop start token.`,
                     nextToken
                 );
@@ -98,8 +99,8 @@ export class Parser
         const beginToken = this.consumeNextToken();
         if (beginToken.kind != TokenKind.LoopStart)
         {
-            throw new Diagnostic.Error(
-                Diagnostic.Codes.ExpectedLoopStartToken,
+            throw new DiagnosticError(
+                DiagnosticCode.ExpectedLoopStartToken,
                 `Expected loop start token, but got "${beginToken}".`,
                 beginToken
             );
@@ -117,8 +118,8 @@ export class Parser
             }
             else if (nextToken.kind == TokenKind.NoToken)
             {
-                throw new Diagnostic.Error(
-                    Diagnostic.Codes.UnexpectedEndOfFileInLoop,
+                throw new DiagnosticError(
+                    DiagnosticCode.UnexpectedEndOfFileInLoop,
                     `Unexpected end of file in loop.`,
                     nextToken
                 );
@@ -133,8 +134,8 @@ export class Parser
         const endToken = this.consumeNextToken();
         if (endToken.kind != TokenKind.LoopEnd)
         {
-            throw new Diagnostic.Error(
-                Diagnostic.Codes.ExpectedLoopEndToken,
+            throw new DiagnosticError(
+                DiagnosticCode.ExpectedLoopEndToken,
                 `Expected loop end token, but got "${endToken}".`,
                 endToken
             );
@@ -169,8 +170,8 @@ export class Parser
                 kind = SyntaxKind.Output;
                 break;
             default:
-                throw new Diagnostic.Error(
-                    Diagnostic.Codes.UnexpectedTokenInStatement,
+                throw new DiagnosticError(
+                    DiagnosticCode.UnexpectedTokenInStatement,
                     `Unexpected token "${token}" in statement.`,
                     token
                 );

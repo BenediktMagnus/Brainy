@@ -1,6 +1,5 @@
 import * as Instructions from './instructions';
 import * as SyntaxNodes from '../parser/syntaxNodes';
-import { ArrayBuilder } from '../utility/arrayBuilder';
 import { SyntaxKind } from '../parser/syntaxKind';
 import { LlvmType } from './llvmType';
 
@@ -10,7 +9,7 @@ export class Emitter
     private readonly memoryName = "%memory";
     private readonly indexName = "%index";
 
-    private instructions: ArrayBuilder<Instructions.Instruction>;
+    private instructions: Instructions.Instruction[];
 
     /** Counter for temporary variables. */
     private variableCounter: number;
@@ -30,15 +29,14 @@ export class Emitter
 
     constructor ()
     {
-        this.instructions = new ArrayBuilder();
-
+        this.instructions = [];
         this.variableCounter = -1;
         this.labelCounter = -1;
     }
 
     public run (fileSyntaxNode: SyntaxNodes.File): string
     {
-        this.instructions.clear();
+        this.instructions = [];
         this.variableCounter = -1;
         this.labelCounter = -1;
 
@@ -68,7 +66,7 @@ export class Emitter
             new Instructions.Instruction('}'),
         );
 
-        const fileText = this.convertInstructionsToText(this.instructions.toArray());
+        const fileText = this.convertInstructionsToText(this.instructions);
 
         return fileText;
     }

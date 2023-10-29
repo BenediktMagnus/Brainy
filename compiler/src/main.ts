@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import * as Diagnostic from './diagnostic';
+import { DiagnosticError } from './diagnostic/diagnosticError';
 import { ProcessArguments, ProcessArgumentsError } from './commandLine/processArguments';
 import FileSystem from 'fs';
 import { Lexer } from './lexer/lexer';
@@ -49,7 +49,7 @@ class Main
         }
         catch (error)
         {
-            if (error instanceof Diagnostic.Error)
+            if (error instanceof DiagnosticError)
             {
                 console.error(error.prettyMessage);
             }

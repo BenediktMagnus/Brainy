@@ -1,4 +1,4 @@
-import { LineInformation } from '../lineInformation';
+import { LineInformation } from '../diagnostic/lineInformation';
 import { TokenKind } from './tokenKind';
 
 export class Token implements LineInformation

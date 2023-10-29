@@ -1,6 +1,6 @@
 import chalk from 'chalk';
-import { LineInformation } from '../lineInformation';
-import { DiagnosticCodes } from './diagnosticCodes';
+import { LineInformation } from './lineInformation';
+import { DiagnosticCode } from './diagnosticCodes';
 
 /**
  * A diagnostic error is an error in the code that will lead to an invalid result, which means that compiling cannot completely finnish.
@@ -37,7 +37,7 @@ export class DiagnosticError extends Error
      * @param text The text of the message. Should not be coloured.
      * @param lineInformation The line information with the location the message applies to.
      */
-    constructor (code: DiagnosticCodes, text: string, lineInformation?: LineInformation)
+    constructor (code: DiagnosticCode, text: string, lineInformation?: LineInformation)
     {
         super(code);
 
