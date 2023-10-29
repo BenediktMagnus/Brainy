@@ -113,7 +113,7 @@ export class Parser
             );
         }
 
-        const statements: SyntaxNodes.Statement[] = [];
+        const commands: SyntaxNodes.Command[] = [];
 
         while (true)
         {
@@ -135,8 +135,8 @@ export class Parser
             }
             else
             {
-                const statement = this.parseStatement();
-                statements.push(statement);
+                const command = this.parseCommand();
+                commands.push(command);
             }
         }
 
@@ -152,7 +152,7 @@ export class Parser
             );
         }
 
-        return new SyntaxNodes.Loop(beginToken, endToken, statements);
+        return new SyntaxNodes.Loop(beginToken, endToken, commands);
     }
 
     private parseStatement (): SyntaxNodes.Statement
