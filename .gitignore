@@ -20,5 +20,4 @@ runtime/bin/**/*
 compiler/obj/**/*
 runtime/obj/**/*
 bin/**/*
-tmp/**/*
-out/**/*
+obj/**/*
