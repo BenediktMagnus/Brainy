@@ -106,84 +106,6 @@ export class Emitter
         return text;
     }
 
-    /**
-     * Load a variable into a temporary.
-     * @param from The variable to load from.
-     * @param size The size of the variable.
-     * @returns The name of the temporary.
-     */
-    private loadFromVariable (variable: string, size: string): string
-    {
-        const temporary = this.nextVariableName;
-
-        this.instructions.push(
-            new LlvmInstructions.Assignment(
-                temporary,
-                'load',
-                size + ',',
-                this.pointerSize,
-                variable,
-            ),
-        );
-
-        return temporary;
-    }
-
-    /**
-     * Stores a temporary into a variable.
-     * @param from The temporary to store from.
-     * @param to The variable to store into.
-     * @param size The size of the variable.
-     */
-    private storeIntoVariable (temporary: string, variable: string, size: string): void
-    {
-        this.instructions.push(
-            new Instructions.Instruction(
-                'store',
-                size,
-                temporary + ',',
-                this.pointerSize,
-                variable,
-            )
-        );
-    }
-
-    private castToIntegerPointer (from: string): string
-    {
-        const bitcastTemporary = this.nextVariableName;
-
-        this.instructions.push(
-            new LlvmInstructions.Assignment(
-                bitcastTemporary,
-                'bitcast',
-                this.pointerSize,
-                from,
-                'to',
-                this.integerPointerSize,
-            ),
-        );
-
-        return bitcastTemporary;
-    }
-
-    public castToPointer (from: string): string
-    {
-        const bitcastTemporary = this.nextVariableName;
-
-        this.instructions.push(
-            new LlvmInstructions.Assignment(
-                bitcastTemporary,
-                'bitcast',
-                this.integerPointerSize,
-                from,
-                'to',
-                this.pointerSize,
-            ),
-        );
-
-        return bitcastTemporary;
-    }
-
     private transpileFile (fileSyntaxNode: SyntaxNodes.File): void
     {
         for (const command of fileSyntaxNode.commands)
@@ -236,43 +158,26 @@ export class Emitter
 
     private transpilePointerIncrement (): void
     {
-        const castedPointer = this.castToIntegerPointer(this.memoryPointerName);
-        const castedTemporary = this.loadFromVariable(castedPointer, this.integerSize);
-
-        const resultTemporary = this.nextVariableName;
+        const loadedIndex = this.nextVariableName;
+        const incrementResult = this.nextVariableName;
 
         this.instructions.push(
-            new LlvmInstructions.Assignment(
-                resultTemporary,
-                'add',
-                this.integerSize,
-                castedTemporary + ',',
-                '1'
-            ),
+            new Instructions.Load(loadedIndex, this.indexName, this.nativeIntegerType),
+            new Instructions.Assignment(incrementResult, 'add', this.nativeIntegerType, loadedIndex + ',', '1'),
+            new Instructions.Store(this.indexName, incrementResult, this.nativeIntegerType),
         );
-
-        //const resultAsPointerTemporary = this.castToPointer(resultTemporary);
-
-        this.storeIntoVariable(resultTemporary, this.memoryPointerName, this.pointerSize);
     }
 
     private transpilePointerDecrement (): void
     {
-        const pointerTemporary = this.loadFromVariable(this.memoryPointerName, this.pointerSize);
-
-        const resultTemporary = this.nextVariableName;
+        const loadedIndex = this.nextVariableName;
+        const incrementResult = this.nextVariableName;
 
         this.instructions.push(
-            new LlvmInstructions.Assignment(
-                resultTemporary,
-                'sub',
-                this.integerSize,
-                pointerTemporary + ',',
-                '1'
-            ),
+            new Instructions.Load(loadedIndex, this.indexName, this.nativeIntegerType),
+            new Instructions.Assignment(incrementResult, 'sub', this.nativeIntegerType, loadedIndex + ',', '1'),
+            new Instructions.Store(this.indexName, incrementResult, this.nativeIntegerType),
         );
-
-        this.storeIntoVariable(resultTemporary, this.memoryPointerName, this.pointerSize);
     }
 
     private transpileValueIncrement (): void
@@ -293,22 +198,18 @@ export class Emitter
 
     private transpileValueDecrement (): void
     {
-        const pointerTemporary = this.loadFromVariable(this.memoryPointerName, this.pointerSize);
-        const valueTemporary = this.loadFromVariable(pointerTemporary, this.integerSize);
-
-        const resultTemporary = this.nextVariableName;
+        const loadedIndex = this.nextVariableName;
+        const memoryCellPointer = this.nextVariableName;
+        const memoryCell = this.nextVariableName;
+        const incrementResult = this.nextVariableName;
 
         this.instructions.push(
-            new LlvmInstructions.Assignment(
-                resultTemporary,
-                'sub',
-                this.integerSize,
-                valueTemporary + ',',
-                '1'
-            ),
+            new Instructions.Load(loadedIndex, this.indexName, this.nativeIntegerType),
+            new Instructions.GetElementPointer(memoryCellPointer, LlvmType.Integer8, loadedIndex, this.memoryName),
+            new Instructions.Load(memoryCell, memoryCellPointer, LlvmType.Integer8),
+            new Instructions.Assignment(incrementResult, 'sub', LlvmType.Integer8, memoryCell + ',', '1'),
+            new Instructions.Store(memoryCellPointer, incrementResult, LlvmType.Integer8),
         );
-
-        this.storeIntoVariable(resultTemporary, pointerTemporary, this.integerSize);
     }
 
     private transpileInput (): void
