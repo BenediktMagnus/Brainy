@@ -105,6 +105,7 @@ export class Lexer
             {
                 return null;
             }
+            // TODO: It would be cool to have a special token for debug prints.
         }
 
         const token = new Token(kind, content, this.fileName, this.line, this.column);

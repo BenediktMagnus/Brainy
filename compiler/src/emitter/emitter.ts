@@ -13,7 +13,7 @@ export class Emitter
     private instructions: ArrayBuilder<Instructions.Instruction>;
 
     /** Counter for temporary variables. */
-    private variableCounter: number; // TODO: Should "variable" renamed into "register"?
+    private variableCounter: number;
     private get nextVariableName (): string
     {
         this.variableCounter++;
@@ -55,19 +55,9 @@ export class Emitter
             new Instructions.Label('entry'),
 
             // Declare the index to the memory:
-            new Instructions.Assignment(
-                this.indexName,
-                'alloca',
-                this.nativeIntegerType,
-            ),
+            new Instructions.Assignment(this.indexName, 'alloca', this.nativeIntegerType),
             // Call to initialise the memory:
-            new Instructions.Assignment(
-                this.memoryName,
-                'call',
-                LlvmType.Pointer,
-                '@initialise',
-                '()'
-            ),
+            new Instructions.Assignment(this.memoryName, 'call', LlvmType.Pointer, '@initialise', '()'),
         );
 
         this.transpileFile(fileSyntaxNode);
@@ -157,11 +147,12 @@ export class Emitter
         const comparisonVariableName = this.nextVariableName;
 
         this.instructions.push(
-            new Instructions.Load(loadedIndex, this.indexName, this.nativeIntegerType),
-            new Instructions.GetElementPointer(memoryCellPointer, LlvmType.Integer8, loadedIndex, this.memoryName),
-            new Instructions.Load(memoryCell, memoryCellPointer, LlvmType.Integer8),
+            new Instructions.Load(this.indexName, loadedIndex, this.nativeIntegerType),
+            new Instructions.GetElementPointer(this.memoryName, memoryCellPointer, LlvmType.Integer8, loadedIndex),
+            new Instructions.Load(memoryCellPointer, memoryCell, LlvmType.Integer8),
         );
 
+        // TODO: Add compare instruction to the instruction classes.
         this.instructions.push(
             new Instructions.Assignment(
                 comparisonVariableName,
@@ -210,7 +201,7 @@ export class Emitter
         const incrementResult = this.nextVariableName;
 
         this.instructions.push(
-            new Instructions.Load(loadedIndex, this.indexName, this.nativeIntegerType),
+            new Instructions.Load(this.indexName, loadedIndex, this.nativeIntegerType),
             new Instructions.Assignment(incrementResult, 'add', this.nativeIntegerType, loadedIndex + ',', '1'),
             new Instructions.Store(this.indexName, incrementResult, this.nativeIntegerType),
         );
@@ -222,7 +213,7 @@ export class Emitter
         const incrementResult = this.nextVariableName;
 
         this.instructions.push(
-            new Instructions.Load(loadedIndex, this.indexName, this.nativeIntegerType),
+            new Instructions.Load(this.indexName, loadedIndex, this.nativeIntegerType),
             new Instructions.Assignment(incrementResult, 'sub', this.nativeIntegerType, loadedIndex + ',', '1'),
             new Instructions.Store(this.indexName, incrementResult, this.nativeIntegerType),
         );
@@ -236,9 +227,9 @@ export class Emitter
         const incrementResult = this.nextVariableName;
 
         this.instructions.push(
-            new Instructions.Load(loadedIndex, this.indexName, this.nativeIntegerType),
-            new Instructions.GetElementPointer(memoryCellPointer, LlvmType.Integer8, loadedIndex, this.memoryName),
-            new Instructions.Load(memoryCell, memoryCellPointer, LlvmType.Integer8),
+            new Instructions.Load(this.indexName, loadedIndex, this.nativeIntegerType),
+            new Instructions.GetElementPointer(this.memoryName, memoryCellPointer, LlvmType.Integer8, loadedIndex),
+            new Instructions.Load(memoryCellPointer, memoryCell, LlvmType.Integer8),
             new Instructions.Assignment(incrementResult, 'add', LlvmType.Integer8, memoryCell + ',', '1'),
             new Instructions.Store(memoryCellPointer, incrementResult, LlvmType.Integer8),
         );
@@ -252,9 +243,9 @@ export class Emitter
         const incrementResult = this.nextVariableName;
 
         this.instructions.push(
-            new Instructions.Load(loadedIndex, this.indexName, this.nativeIntegerType),
-            new Instructions.GetElementPointer(memoryCellPointer, LlvmType.Integer8, loadedIndex, this.memoryName),
-            new Instructions.Load(memoryCell, memoryCellPointer, LlvmType.Integer8),
+            new Instructions.Load(this.indexName, loadedIndex, this.nativeIntegerType),
+            new Instructions.GetElementPointer(this.memoryName, memoryCellPointer, LlvmType.Integer8, loadedIndex),
+            new Instructions.Load(memoryCellPointer, memoryCell, LlvmType.Integer8),
             new Instructions.Assignment(incrementResult, 'sub', LlvmType.Integer8, memoryCell + ',', '1'),
             new Instructions.Store(memoryCellPointer, incrementResult, LlvmType.Integer8),
         );
@@ -267,8 +258,8 @@ export class Emitter
         const memoryCellPointer = this.nextVariableName;
 
         this.instructions.push(
-            new Instructions.Load(loadedIndex, this.indexName, this.nativeIntegerType),
-            new Instructions.GetElementPointer(memoryCellPointer, LlvmType.Integer8, loadedIndex, this.memoryName),
+            new Instructions.Load(this.indexName, loadedIndex, this.nativeIntegerType),
+            new Instructions.GetElementPointer(this.memoryName, memoryCellPointer, LlvmType.Integer8, loadedIndex),
             new Instructions.Assignment(readResult, 'call', LlvmType.Integer8, '@read', `()`),
             new Instructions.Store(memoryCellPointer, readResult, LlvmType.Integer8),
         );
@@ -281,10 +272,10 @@ export class Emitter
         const memoryCell = this.nextVariableName;
 
         this.instructions.push(
-            new Instructions.Load(loadedIndex, this.indexName, this.nativeIntegerType),
-            new Instructions.GetElementPointer(memoryCellPointer, LlvmType.Integer8, loadedIndex, this.memoryName),
-            new Instructions.Load(memoryCell, memoryCellPointer, LlvmType.Integer8),
-            new Instructions.Instruction('call', LlvmType.Void, '@write', `(${LlvmType.Integer8} ${memoryCell})`)
+            new Instructions.Load(this.indexName, loadedIndex, this.nativeIntegerType),
+            new Instructions.GetElementPointer(this.memoryName, memoryCellPointer, LlvmType.Integer8, loadedIndex),
+            new Instructions.Load(memoryCellPointer, memoryCell, LlvmType.Integer8),
+            new Instructions.Instruction('call', LlvmType.Void, '@write', `(${LlvmType.Integer8} ${memoryCell})`),
         );
     }
 }

@@ -96,6 +96,8 @@ void write (UInt8 character)
  */
 void debug (UInt64 cellCount)
 {
+    // TODO: It should be possible to specify an index and/or a minimum/maximum.
+
     if (currentMemoryAddress == null)
     {
         write('0');

@@ -6,10 +6,10 @@ import { LlvmType } from '../llvmType';
  */
 export class LoadInstruction extends Instructions.Instruction
 {
-    constructor (fromVariable: string, toVariable: string, type: LlvmType)
+    constructor (fromVariable: string, toVariable: string, type: LlvmType) // TODO: Switch to and from variables
     {
-        const command = fromVariable + ' = load';
+        const command = toVariable + ' = load';
 
-        super(command, type + ',', 'ptr', toVariable);
+        super(command, type + ',', 'ptr', fromVariable);
     }
 }
