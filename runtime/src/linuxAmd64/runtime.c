@@ -1,6 +1,9 @@
+#include "../common/convert.h"
 #include "memory.h"
 #include "syscodes.h"
 #include "../common/types.h"
+
+UInt8* currentMemoryAddress = null;
 
 /**
  * Initialise the working memory.
@@ -10,14 +13,14 @@ UInt8* initialise ()
 {
     const UInt memorySize = 30000;
 
-    UInt8* memoryAddress = alloc(memorySize);
+    currentMemoryAddress = alloc(memorySize);
 
     for (UInt i = 0; i < memorySize; i++)
     {
-        memoryAddress[i] = 0;
+        currentMemoryAddress[i] = 0;
     }
 
-    return memoryAddress;
+    return currentMemoryAddress;
 }
 
 /**
@@ -70,6 +73,45 @@ void write (UInt8 character)
                             : "rcx", "r11");
 
     // TODO: Check if result is an error (-1) or less than the text size.
+}
+
+/**
+ * Debug print the memory as decimal numbers.
+ * @param cellCount The number of cells to print.
+ */
+void debug (UInt64 cellCount)
+{
+    if (currentMemoryAddress == null)
+    {
+        write('0');
+        return;
+    }
+
+    UInt8 textBuffer[3] = { 0, 0, 0 };
+
+    write('\n');
+
+    for (UInt64 i = 0; i < cellCount; i++)
+    {
+        convertByteToString(currentMemoryAddress[i], textBuffer);
+
+        if (textBuffer[0] != '0')
+        {
+            write(textBuffer[0]);
+            write(textBuffer[1]);
+        }
+        else if (textBuffer[1] != '0')
+        {
+            write(textBuffer[1]);
+        }
+
+        write(textBuffer[2]);
+
+        if (i < cellCount - 1)
+        {
+            write('-');
+        }
+    }
 }
 
 /**
