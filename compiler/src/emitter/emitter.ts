@@ -95,7 +95,7 @@ export class Emitter
                 indentation = indentation.slice(4);
             }
 
-            text += instruction.render() + '\n';
+            text += instruction.render(indentation) + '\n';
 
             if (instruction.command == '{')
             {

@@ -22,7 +22,7 @@ export class Instruction
     /**
      * Render the instruction as a string.
      */
-    public render (): string
+    public render (indentation = ''): string
     {
         let operandsString = '';
         if (this.operands.length > 0)
@@ -30,6 +30,6 @@ export class Instruction
             operandsString = this.commandOperandSplitter + this.operands.join(this.operandSplitter);
         }
 
-        return this.prefix + this.command + operandsString + this.postfix;
+        return indentation + this.prefix + this.command + operandsString + this.postfix;
     }
 }
