@@ -214,8 +214,16 @@ export class Emitter
 
     private transpileInput (): void
     {
-        // TODO: Implement.
-        return;
+        const readResult = this.nextVariableName;
+        const loadedIndex = this.nextVariableName;
+        const memoryCellPointer = this.nextVariableName;
+
+        this.instructions.push(
+            new Instructions.Load(loadedIndex, this.indexName, this.nativeIntegerType),
+            new Instructions.GetElementPointer(memoryCellPointer, LlvmType.Integer8, loadedIndex, this.memoryName),
+            new Instructions.Assignment(readResult, 'call', LlvmType.Integer8, '@read', `()`),
+            new Instructions.Store(memoryCellPointer, readResult, LlvmType.Integer8),
+        );
     }
 
     private transpileOutput (): void

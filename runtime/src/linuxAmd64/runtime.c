@@ -1,5 +1,6 @@
 #include "../common/convert.h"
 #include "memory.h"
+#include "runtime.h"
 #include "syscodes.h"
 #include "../common/types.h"
 
@@ -31,10 +32,11 @@ UInt8 read ()
 {
     Int fileDescriptor = 0; // File descriptor ID for stdin
 
-    const UInt bufferSize = 1;
+    const UInt bufferSize = 8;
     UInt8 buffer[bufferSize]; // TODO: Could the buffer be a UInt8 instead of an array?
 
     Int bytesRead = 0;
+    UInt8 result = 0;
 
     while (true)
     {
@@ -46,13 +48,26 @@ UInt8 read ()
 
         if (bytesRead > 0)
         {
-            return buffer[0];
+            if (result == 0)
+            {
+                result = buffer[0];
+            }
+
+            // We end reading as soon as the last character is a line break:
+            if (buffer[bytesRead - 1] == '\n')
+            {
+                break;
+            }
         }
         else
         {
-            continue;
+            break;
         }
     }
+
+    // TODO: It is a bit ugly that the user has to press enter and a line break is inserted into the terminal. Could this be prevented?
+
+    return result;
 }
 
 /**
