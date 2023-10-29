@@ -57,6 +57,9 @@ export class Lexer
             }
         }
 
+        const enfOfFileToken = new Token(TokenKind.NoToken, '', this.fileName, this.line, this.column);
+        tokens.push(enfOfFileToken);
+
         return tokens;
     }
 
