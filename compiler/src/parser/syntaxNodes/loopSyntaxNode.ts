@@ -9,13 +9,13 @@ export class LoopSyntaxNode
     public readonly beginToken: Token;
     public readonly endToken: Token;
 
-    public readonly statements: CommandSyntaxNode[];
+    public readonly commands: CommandSyntaxNode[];
 
-    constructor (beginToken: Token, endToken: Token, statements: CommandSyntaxNode[])
+    constructor (beginToken: Token, endToken: Token, commands: CommandSyntaxNode[])
     {
         this.beginToken = beginToken;
         this.endToken = endToken;
-        this.statements = statements;
+        this.commands = commands;
 
         this.kind = SyntaxKind.Loop;
     }

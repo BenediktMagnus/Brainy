@@ -20,9 +20,9 @@ export class Emitter
         return `%"${this.variableCounter}v"`;
     }
 
-    /** Label counter for the generation of basic blocks as required by LLVM. */
+    /** Label counter for the generation of loops. */
     private labelCounter: number;
-    public get nextLabelName (): string // TODO: Make private.
+    private get nextLabelName (): string
     {
         this.labelCounter++;
         return `"${this.labelCounter}l"`;
@@ -126,9 +126,57 @@ export class Emitter
         }
     }
 
-    private transpileLoop (_loopSyntaxNode: SyntaxNodes.Loop): void
+    private transpileLoop (loopSyntaxNode: SyntaxNodes.Loop): void
     {
+        const beginLabel = this.nextLabelName;
+        const endLabel = this.nextLabelName;
 
+        this.jumpIfCellIsZero(endLabel, beginLabel);
+
+        this.instructions.push(
+            new Instructions.Label(beginLabel),
+        );
+
+        for (const command of loopSyntaxNode.commands)
+        {
+            this.transpileCommand(command);
+        }
+
+        this.jumpIfCellIsZero(endLabel, beginLabel);
+
+        this.instructions.push(
+            new Instructions.Label(endLabel),
+        );
+    }
+
+    private jumpIfCellIsZero (trueLabel: string, falseLabel: string)
+    {
+        const loadedIndex = this.nextVariableName;
+        const memoryCellPointer = this.nextVariableName;
+        const memoryCell = this.nextVariableName;
+        const comparisonVariableName = this.nextVariableName;
+
+        this.instructions.push(
+            new Instructions.Load(loadedIndex, this.indexName, this.nativeIntegerType),
+            new Instructions.GetElementPointer(memoryCellPointer, LlvmType.Integer8, loadedIndex, this.memoryName),
+            new Instructions.Load(memoryCell, memoryCellPointer, LlvmType.Integer8),
+        );
+
+        this.instructions.push(
+            new Instructions.Assignment(
+                comparisonVariableName,
+                'icmp',
+                'eq',
+                LlvmType.Integer8,
+                memoryCell + ',',
+                '0',
+            ),
+            new Instructions.Branch(
+                comparisonVariableName,
+                trueLabel,
+                falseLabel
+            ),
+        );
     }
 
     private transpileStatement (statementSyntaxNode: SyntaxNodes.Statement): void
