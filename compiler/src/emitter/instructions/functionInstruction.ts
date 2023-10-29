@@ -1,19 +1,20 @@
-import { Instruction } from './instruction';
+import * as Instructions from '.';
+import { LlvmType } from '../llvmType';
 
-export class FunctionInstruction extends Instruction
+/**
+ * A LLVM function instruction in the form of: define returnType name (parameters...)
+ */
+export class FunctionInstruction extends Instructions.Instruction
 {
-    constructor (keyword: string, name: string, parameters: string[], returnType: string)
+    constructor (returnType: LlvmType, name: string, parameters: string[])
     {
-        const parameterString = '(' + parameters.join(', ') + '):';
+        const parameterString = '(' + parameters.join(', ') + ')';
 
-        super(keyword, name, parameterString, returnType);
+        super('define', returnType, name, parameterString);
 
-        this.renderOptions = {
-            commandOperandSplitter: ' ',
-            operandSplitter: ' ',
-            prefix: '',
-            postfix: '',
-        };
-
+        this.commandOperandSplitter = ' ';
+        this.operandSplitter = ' ';
+        this.prefix = '';
+        this.postfix = '';
     }
 }

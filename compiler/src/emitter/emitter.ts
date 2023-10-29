@@ -1,18 +1,14 @@
 import * as Instructions from './instructions';
-import * as LlvmInstructions from './llvmInstructions';
 import * as SyntaxNodes from '../parser/syntaxNodes';
 import { ArrayBuilder } from '../utility/arrayBuilder';
 import { SyntaxKind } from '../parser/syntaxKind';
+import { LlvmType } from './llvmType';
 
 export class Emitter
 {
-    private readonly pointerSize = 'ptr';
-    private readonly byteSize = 'i8';
-    private readonly integerPointerSize = 'i64*';
-    private readonly integerSize = 'i64';
+    private readonly nativeIntegerType = LlvmType.Integer64;
     private readonly memoryName = "%memory";
     private readonly indexName = "%index";
-    private readonly memoryPointerName = "%memoryPointer";
 
     private instructions: ArrayBuilder<Instructions.Instruction>;
 
@@ -48,27 +44,27 @@ export class Emitter
 
         this.instructions.push(
             // External runtime functions:
-            new Instructions.Instruction('declare', this.pointerSize, '@initialise', '()'),
-            new Instructions.Instruction('declare', this.byteSize, '@read', '()'),
-            new Instructions.Instruction('declare', 'void', '@write', `(${this.byteSize})`),
-            new Instructions.Instruction('declare', 'void', '@exit', '()', 'noreturn'),
+            new Instructions.Instruction('declare', LlvmType.Pointer, '@initialise', '()'),
+            new Instructions.Instruction('declare', LlvmType.Integer8, '@read', '()'),
+            new Instructions.Instruction('declare', LlvmType.Void, '@write', `(${LlvmType.Integer8})`),
+            new Instructions.Instruction('declare', LlvmType.Void, '@exit', '()', 'noreturn'),
 
             // Entry point:
-            new LlvmInstructions.Function('define', 'void', '@_start', []),
+            new Instructions.Function(LlvmType.Void, '@_start', []),
             new Instructions.Instruction('{'),
             new Instructions.Label('entry'),
 
             // Declare the index to the memory:
-            new LlvmInstructions.Assignment(
+            new Instructions.Assignment(
                 this.indexName,
                 'alloca',
-                this.integerSize,
+                this.nativeIntegerType,
             ),
             // Call to initialise the memory:
-            new LlvmInstructions.Assignment(
+            new Instructions.Assignment(
                 this.memoryName,
                 'call',
-                this.pointerSize,
+                LlvmType.Pointer,
                 '@initialise',
                 '()'
             ),
@@ -77,8 +73,8 @@ export class Emitter
         this.transpileFile(fileSyntaxNode);
 
         this.instructions.push(
-            new Instructions.Instruction('call', 'void', '@exit', '()'),
-            new Instructions.Instruction('ret', 'void'),
+            new Instructions.Instruction('call', LlvmType.Void, '@exit', '()'),
+            new Instructions.Instruction('ret', LlvmType.Void),
             new Instructions.Instruction('}'),
         );
 
@@ -99,14 +95,7 @@ export class Emitter
                 indentation = indentation.slice(4);
             }
 
-            const renderOptions: Instructions.RenderOptions = {
-                commandOperandSplitter: ' ',
-                operandSplitter: ' ',
-                prefix: '',
-                postfix: '',
-            };
-
-            text += instruction.render(renderOptions, indentation) + '\n';
+            text += instruction.render() + '\n';
 
             if (instruction.command == '{')
             {
@@ -288,68 +277,17 @@ export class Emitter
 
     private transpileValueIncrement (): void
     {
-        /*
-        %index = load i64, ptr %indexPointer
-        %memoryCellPointer = getelementptr i8, ptr %memory, i64 0
-        %memoryCell = load i8, ptr %memoryCellPointer
-        %incrementResult = add i8 %memoryCell, 1
-        store i8 %incrementResult, ptr %memoryCellPointer
-        */
-
-        const index = this.nextVariableName;
-        this.instructions.push(
-            new LlvmInstructions.Assignment(
-                index,
-                'load',
-                this.integerSize + ',',
-                this.pointerSize,
-                this.indexName,
-            ),
-        );
-
+        const loadedIndex = this.nextVariableName;
         const memoryCellPointer = this.nextVariableName;
-        this.instructions.push(
-            new LlvmInstructions.Assignment(
-                memoryCellPointer,
-                'getelementptr',
-                this.byteSize + ',',
-                this.pointerSize,
-                this.memoryName + ',',
-                this.integerSize,
-                '0', // TODO: Index
-            ),
-        );
-
         const memoryCell = this.nextVariableName;
-        this.instructions.push(
-            new LlvmInstructions.Assignment(
-                memoryCell,
-                'load',
-                this.byteSize + ',',
-                this.pointerSize,
-                memoryCellPointer,
-            ),
-        );
-
         const incrementResult = this.nextVariableName;
-        this.instructions.push(
-            new LlvmInstructions.Assignment(
-                incrementResult,
-                'add',
-                this.byteSize,
-                memoryCell + ',',
-                '1',
-            ),
-        );
 
         this.instructions.push(
-            new Instructions.Instruction(
-                'store',
-                this.byteSize,
-                incrementResult + ',',
-                this.pointerSize,
-                memoryCellPointer,
-            )
+            new Instructions.Load(loadedIndex, this.indexName, this.nativeIntegerType),
+            new Instructions.GetElementPointer(memoryCellPointer, LlvmType.Integer8, loadedIndex, this.memoryName),
+            new Instructions.Load(memoryCell, memoryCellPointer, LlvmType.Integer8),
+            new Instructions.Assignment(incrementResult, 'add', LlvmType.Integer8, memoryCell + ',', '1'),
+            new Instructions.Store(memoryCellPointer, incrementResult, LlvmType.Integer8),
         );
     }
 
@@ -381,50 +319,15 @@ export class Emitter
 
     private transpileOutput (): void
     {
-        const index = this.nextVariableName;
-        this.instructions.push(
-            new LlvmInstructions.Assignment(
-                index,
-                'load',
-                this.integerSize + ',',
-                this.pointerSize,
-                this.indexName,
-            ),
-        );
-
+        const loadedIndex = this.nextVariableName;
         const memoryCellPointer = this.nextVariableName;
-        this.instructions.push(
-            new LlvmInstructions.Assignment(
-                memoryCellPointer,
-                'getelementptr',
-                this.byteSize + ',',
-                this.pointerSize,
-                this.memoryName + ',',
-                this.integerSize,
-                '0', // TODO: Index
-            ),
-        );
-
         const memoryCell = this.nextVariableName;
-        this.instructions.push(
-            new LlvmInstructions.Assignment(
-                memoryCell,
-                'load',
-                this.byteSize + ',',
-                this.pointerSize,
-                memoryCellPointer,
-            ),
-        );
 
         this.instructions.push(
-            new Instructions.Instruction(
-                'call',
-                'void',
-                '@write',
-                `(${this.byteSize} ${memoryCell})`,
-            )
+            new Instructions.Load(loadedIndex, this.indexName, this.nativeIntegerType),
+            new Instructions.GetElementPointer(memoryCellPointer, LlvmType.Integer8, loadedIndex, this.memoryName),
+            new Instructions.Load(memoryCell, memoryCellPointer, LlvmType.Integer8),
+            new Instructions.Instruction('call', LlvmType.Void, '@write', `(${LlvmType.Integer8} ${memoryCell})`)
         );
-
-        return;
     }
 }

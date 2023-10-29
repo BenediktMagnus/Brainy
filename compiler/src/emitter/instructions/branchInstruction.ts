@@ -1,4 +1,4 @@
-import * as Instructions from '../instructions';
+import * as Instructions from '.';
 
 /**
  * A LLVM branch instruction in the form of: branch label <label> or br i1 <condition>, label <trueLabel>, label <falseLabel>
@@ -22,11 +22,9 @@ export class BranchInstruction extends Instructions.Instruction
             super(command, conditionOrLabel, 'label %' + trueLabel, 'label %' + falseLabel);
         }
 
-        this.renderOptions = {
-            commandOperandSplitter: ' ',
-            operandSplitter: ', ',
-            prefix: '',
-            postfix: '',
-        };
+        this.commandOperandSplitter = ' ';
+        this.operandSplitter = ', ';
+        this.prefix = '';
+        this.postfix = '';
     }
 }

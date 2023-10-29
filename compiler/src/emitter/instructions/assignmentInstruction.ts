@@ -1,4 +1,4 @@
-import * as Instructions from '../instructions';
+import * as Instructions from '.';
 
 /**
  * A LLVM assignment instruction in the form of: variable = operands...
