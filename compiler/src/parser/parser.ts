@@ -6,16 +6,12 @@ import { SyntaxKind } from './syntaxKind';
 
 export class Parser
 {
-    private readonly diagnostic: Diagnostic.Diagnostic;
-
     private fileName: string;
     private tokens: Token[];
     private position: number;
 
-    constructor (diagnostic: Diagnostic.Diagnostic)
+    constructor ()
     {
-        this.diagnostic = diagnostic;
-
         this.fileName = '';
         this.tokens = [];
         this.position = 0;
@@ -87,12 +83,10 @@ export class Parser
             case TokenKind.LoopStart:
                 return this.parseLoop();
             case TokenKind.LoopEnd:
-                this.diagnostic.throw(
-                    new Diagnostic.Error(
-                        `Found loop end token before loop start token.`,
-                        Diagnostic.Codes.LoopEndTokenBeforeLoopStartToken,
-                        nextToken
-                    )
+                throw new Diagnostic.Error(
+                    Diagnostic.Codes.LoopEndTokenBeforeLoopStartToken,
+                    `Found loop end token before loop start token.`,
+                    nextToken
                 );
             default:
                 return this.parseStatement();
@@ -104,12 +98,10 @@ export class Parser
         const beginToken = this.consumeNextToken();
         if (beginToken.kind != TokenKind.LoopStart)
         {
-            this.diagnostic.throw(
-                new Diagnostic.Error(
-                    `Expected loop start token, but got "${beginToken}".`,
-                    Diagnostic.Codes.ExpectedLoopStartToken,
-                    beginToken
-                )
+            throw new Diagnostic.Error(
+                Diagnostic.Codes.ExpectedLoopStartToken,
+                `Expected loop start token, but got "${beginToken}".`,
+                beginToken
             );
         }
 
@@ -125,12 +117,10 @@ export class Parser
             }
             else if (nextToken.kind == TokenKind.NoToken)
             {
-                this.diagnostic.throw(
-                    new Diagnostic.Error(
-                        `Unexpected end of file in loop.`,
-                        Diagnostic.Codes.UnexpectedEndOfFileInLoop,
-                        nextToken
-                    )
+                throw new Diagnostic.Error(
+                    Diagnostic.Codes.UnexpectedEndOfFileInLoop,
+                    `Unexpected end of file in loop.`,
+                    nextToken
                 );
             }
             else
@@ -143,12 +133,10 @@ export class Parser
         const endToken = this.consumeNextToken();
         if (endToken.kind != TokenKind.LoopEnd)
         {
-            this.diagnostic.throw(
-                new Diagnostic.Error(
-                    `Expected loop end token, but got "${endToken}".`,
-                    Diagnostic.Codes.ExpectedLoopEndToken,
-                    endToken
-                )
+            throw new Diagnostic.Error(
+                Diagnostic.Codes.ExpectedLoopEndToken,
+                `Expected loop end token, but got "${endToken}".`,
+                endToken
             );
         }
 
@@ -181,12 +169,10 @@ export class Parser
                 kind = SyntaxKind.Output;
                 break;
             default:
-                this.diagnostic.throw(
-                    new Diagnostic.Error(
-                        `Unexpected token "${token}" in statement.`,
-                        Diagnostic.Codes.UnexpectedTokenInStatement,
-                        token
-                    )
+                throw new Diagnostic.Error(
+                    Diagnostic.Codes.UnexpectedTokenInStatement,
+                    `Unexpected token "${token}" in statement.`,
+                    token
                 );
         }
 

@@ -4,7 +4,6 @@ import * as Diagnostic from './diagnostic';
 import { ProcessArguments, ProcessArgumentsError } from './commandLine/processArguments';
 import FileSystem from 'fs';
 import { Lexer } from './lexer/lexer';
-import os from 'os';
 import { Parser } from './parser/parser';
 import { Emitter } from './emitter/emitter';
 
@@ -36,10 +35,8 @@ class Main
             FileSystem.mkdirSync(temporaryDirectoryPath);
         }
 
-        const diagnostic = new Diagnostic.Diagnostic();
-
         const lexer = new Lexer();
-        const parser = new Parser(diagnostic);
+        const parser = new Parser();
         const emitter = new Emitter();
 
         try
@@ -49,41 +46,16 @@ class Main
             const tokens = lexer.run(fileContent, this.arguments.filePath);
             const syntaxTree = parser.run(tokens, this.arguments.filePath);
             const llvmCode = emitter.run(syntaxTree);
-
-            diagnostic.end();
         }
         catch (error)
         {
-            if (error instanceof Diagnostic.Exception)
+            if (error instanceof Diagnostic.Error)
             {
-                return;
+                console.error(error.prettyMessage);
             }
             else
             {
                 throw error;
-            }
-        }
-        finally
-        {
-            if (diagnostic.errors.length != 0)
-            {
-                const errorString = diagnostic.errors.join(os.EOL);
-
-                console.error(errorString);
-            }
-
-            if (diagnostic.warnings.length != 0)
-            {
-                const warningString = diagnostic.warnings.join(os.EOL);
-
-                console.error(warningString);
-            }
-
-            if (diagnostic.info.length != 0)
-            {
-                const infoString = diagnostic.info.join(os.EOL);
-
-                console.error(infoString);
             }
         }
     }
