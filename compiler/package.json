@@ -46,10 +46,11 @@
     "main": "bin/main.js",
     "scripts": {
         "build": "tsc",
+        "build:release": "npm run clean && tsc -p tsconfig.release.json",
         "clean": "rm -rf bin",
         "fullCheck": "npm run build && npm run lint",
         "lint": "eslint \"src/**/*.ts\"",
-        "prepack": "npm run clean && tsc -p tsconfig.release.json",
+        "prepack": "npm run build:release",
         "start": "node bin/main.js"
     },
     "private": true
