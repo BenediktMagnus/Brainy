@@ -111,23 +111,20 @@ function build
         linuxAmd64)
             targetLinuxAmd64
             ;;
-        stable)
-            targetLinuxAmd64
-            ;;
     esac
 
     echo "Build completed for target $buildTarget."
 }
 
-# Parameters (when no given, default to "stable"):
-target="${1-stable}"
+# Parameters (when no given, default to "all"):
+target="${1-all}"
 
 # Target processing:
 case $target in
     clean)
         clean
         ;;
-    all|linuxAmd64|stable)
+    all|linuxAmd64)
         build $target
         ;;
     -h|--help|help|*)
@@ -136,6 +133,5 @@ case $target in
         echo "Special targets:"
         echo "  clean - Clean the build directory."
         echo "  all - Build all targets."
-        echo "  stable - Build the targets that are considered stable."
         ;;
 esac
