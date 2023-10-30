@@ -59,12 +59,12 @@ class Main
             const syntaxTree = parser.run(tokens, this.arguments.filePath);
             const llvmCode = emitter.run(syntaxTree);
 
-            const fileName = Path.parse(
-                Path.basename(this.arguments.filePath)
-            ).name;
+            const fileName = Path.parse(this.arguments.filePath).name;
 
             const objectFilePath = backend.compile(llvmCode, fileName, temporaryDirectoryPath);
-            backend.link(objectFilePath, 'runtime/bin/linuxAmd64/runtime.a', this.arguments.outputPath); // TODO Replace hardcoded path.
+            const runtimeLibraryPath = this.getRuntimeLibraryPath();
+
+            backend.link(objectFilePath, runtimeLibraryPath, this.arguments.outputPath);
         }
         catch (error)
         {
@@ -77,6 +77,35 @@ class Main
                 throw error;
             }
         }
+    }
+
+    private getRuntimeLibraryPath (): string
+    {
+        if (this.arguments.runtimeLibaryPath !== null)
+        {
+            return this.arguments.runtimeLibaryPath;
+        }
+
+        const compilerBinPath = Path.dirname(process.argv[1]);
+        const compilerBasePath = Path.dirname(compilerBinPath);
+
+        const possiblePaths = [
+            // Shipped project:
+            `${compilerBasePath}/runtime/${this.arguments.targetPlatform}/runtime.a`,
+            // Relative to the caller:
+            `runtime/${this.arguments.targetPlatform}/runtime.a`,
+            `runtime/bin/${this.arguments.targetPlatform}/runtime.a`,
+        ];
+
+        for (const path of possiblePaths)
+        {
+            if (FileSystem.existsSync(path))
+            {
+                return path;
+            }
+        }
+
+        return 'runtime.a';
     }
 }
 

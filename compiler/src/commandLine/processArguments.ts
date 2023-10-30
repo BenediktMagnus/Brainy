@@ -6,8 +6,8 @@ export type ProcessArgumentsError = CommanderError;
 /** This is the typing for the result of command.opts. It allows typesafe handling of the options. */
 interface OptionValues
 {
-    standardLibrary: string;
     target?: TargetPlatform;
+    runtimeLibary?: string;
 }
 
 export class ProcessArguments
@@ -15,6 +15,7 @@ export class ProcessArguments
     public readonly filePath: string;
     public readonly outputPath: string;
     public readonly targetPlatform: TargetPlatform;
+    public readonly runtimeLibaryPath: string|null;
 
     constructor (argv?: string[])
     {
@@ -45,6 +46,12 @@ export class ProcessArguments
                 }
             );
 
+        command
+            .option(
+                '-l, --runtimeLibrary <file>',
+                'File path to the compiled runtime library',
+            );
+
         const targetOption = new Option('-t, --target <platform>', 'Set the compilation target platform');
         targetOption.choices(Object.values(TargetPlatform));
         command.addOption(targetOption);
@@ -58,6 +65,9 @@ export class ProcessArguments
         this.filePath = filePath;
         this.outputPath = outputPath;
 
-        this.targetPlatform = options.target ?? TargetPlatform.LinuxAmd64; // TODO: Use the platform the compiler runs on as default.
+        this.runtimeLibaryPath = options.runtimeLibary ?? null;
+
+        this.targetPlatform = options.target ?? TargetPlatform.LinuxAmd64;
+        // TODO: Use the platform the compiler runs on as default (process.arch, process.platform).
     }
 }
