@@ -39,6 +39,7 @@
     ],
     "files": [
         "bin",
+        "runtime",
         "LICENSE",
         "README.md"
     ],

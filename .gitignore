@@ -21,3 +21,5 @@ compiler/obj/**/*
 runtime/obj/**/*
 bin/**/*
 obj/**/*
+compiler/runtime
+*.tgz
