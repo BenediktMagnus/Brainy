@@ -1,7 +1,7 @@
 import * as Instructions from './instructions';
 import * as SyntaxNodes from '../parser/syntaxNodes';
-import { SyntaxKind } from '../parser/syntaxKind';
 import { LlvmType } from './llvmType';
+import { SyntaxKind } from '../parser/syntaxKind';
 
 export class Emitter
 {
@@ -137,7 +137,7 @@ export class Emitter
         );
     }
 
-    private jumpIfCellIsZero (trueLabel: string, falseLabel: string)
+    private jumpIfCellIsZero (trueLabel: string, falseLabel: string): void
     {
         const loadedIndex = this.nextVariableName;
         const memoryCellPointer = this.nextVariableName;

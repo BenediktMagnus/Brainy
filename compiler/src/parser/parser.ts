@@ -1,9 +1,9 @@
 import * as SyntaxNodes from './syntaxNodes';
 import { DiagnosticCode } from '../diagnostic/diagnosticCodes';
 import { DiagnosticError } from '../diagnostic/diagnosticError';
+import { SyntaxKind } from './syntaxKind';
 import { Token } from '../lexer/token';
 import { TokenKind } from '../lexer/tokenKind';
-import { SyntaxKind } from './syntaxKind';
 
 export class Parser
 {
@@ -101,7 +101,7 @@ export class Parser
         {
             throw new DiagnosticError(
                 DiagnosticCode.ExpectedLoopStartToken,
-                `Expected loop start token, but got "${beginToken}".`,
+                `Expected loop start token, but got "${beginToken.toString()}".`,
                 beginToken
             );
         }
@@ -136,7 +136,7 @@ export class Parser
         {
             throw new DiagnosticError(
                 DiagnosticCode.ExpectedLoopEndToken,
-                `Expected loop end token, but got "${endToken}".`,
+                `Expected loop end token, but got "${endToken.toString()}".`,
                 endToken
             );
         }
@@ -172,7 +172,7 @@ export class Parser
             default:
                 throw new DiagnosticError(
                     DiagnosticCode.UnexpectedTokenInStatement,
-                    `Unexpected token "${token}" in statement.`,
+                    `Unexpected token "${token.toString()}" in statement.`,
                     token
                 );
         }

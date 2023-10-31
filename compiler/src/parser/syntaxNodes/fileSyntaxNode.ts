@@ -1,5 +1,5 @@
-import { SyntaxKind } from '../syntaxKind';
 import { CommandSyntaxNode } from './syntaxNode';
+import { SyntaxKind } from '../syntaxKind';
 
 export class FileSyntaxNode
 {

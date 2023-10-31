@@ -6,7 +6,7 @@ import { LlvmType } from '../llvmType';
  */
 export class GetElementPointerInstruction extends Instructions.Instruction
 {
-    constructor (fromVariable: string, toVariable: string, type: LlvmType, index: string)  // TODO: Switch to and from variables
+    constructor (fromVariable: string, toVariable: string, type: LlvmType, index: string) // TODO: Switch to and from variables
     {
         const command = toVariable + ' = getelementptr';
 

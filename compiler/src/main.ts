@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+import { ProcessArguments, ProcessArgumentsError } from './commandLine/processArguments';
 import { Backend } from './backend/backend';
 import { DiagnosticError } from './diagnostic/diagnosticError';
 import { Emitter } from './emitter/emitter';
@@ -8,7 +9,6 @@ import { Lexer } from './lexer/lexer';
 import { LinuxAmd64Backend } from './backend/linuxAmd64Backend';
 import { Parser } from './parser/parser';
 import Path from 'path';
-import { ProcessArguments, ProcessArgumentsError } from './commandLine/processArguments';
 import { TargetPlatform } from './commandLine/targetPlatform';
 
 class Main

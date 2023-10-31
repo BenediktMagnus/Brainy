@@ -1,6 +1,6 @@
 import chalk from 'chalk';
-import { LineInformation } from './lineInformation';
 import { DiagnosticCode } from './diagnosticCodes';
+import { LineInformation } from './lineInformation';
 
 /**
  * A diagnostic error is an error in the code that will lead to an invalid result, which means that compiling cannot completely finnish.

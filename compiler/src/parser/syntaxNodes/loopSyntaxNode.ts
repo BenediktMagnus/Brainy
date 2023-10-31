@@ -1,6 +1,6 @@
+import { CommandSyntaxNode } from './syntaxNode';
 import { SyntaxKind } from '../syntaxKind';
 import { Token } from '../../lexer/token';
-import { CommandSyntaxNode } from './syntaxNode';
 
 export class LoopSyntaxNode
 {

@@ -66,7 +66,7 @@ export class Lexer
     public lex (): Token|null
     {
         let kind: TokenKind|undefined = undefined;
-        let content = this.consumeNextCharacter();
+        const content = this.consumeNextCharacter();
 
         switch (content)
         {
