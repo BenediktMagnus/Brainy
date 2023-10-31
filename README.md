@@ -25,3 +25,7 @@ For more info there is a help command:
 ```
 brainy --help
 ```
+
+### Available Target Platforms
+
+- Linux (Amd64)
