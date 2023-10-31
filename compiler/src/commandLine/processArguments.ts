@@ -34,7 +34,7 @@ export class ProcessArguments
             }
         );
 
-        command.name('brainfuck');
+        command.name('brainy');
 
         command
             .arguments('<inputFile> <outputFile>')

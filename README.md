@@ -1,1 +1,3 @@
-# A Brainfuck compiler that utilises LLVM
+# The Brainy Compiler
+
+A compiler for the Brainfuck programming language, written in Typecescript and utilising LLVM.

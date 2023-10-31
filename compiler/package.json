@@ -1,5 +1,5 @@
 {
-    "name": "brainfuck-llvm-compiler",
+    "name": "brainy-compiler",
     "description": "A Brainfuck compiler that utilises LLVM.",
     "author": "Benedikt Magnus",
     "version": "0.1.0-dev",
@@ -10,10 +10,10 @@
     ],
     "repository": {
         "type": "git",
-        "url": "https://github.com/BenediktMagnus/BrainfuckLLVM"
+        "url": "https://github.com/BenediktMagnus/Brainy"
     },
     "bugs": {
-        "url": "https://github.com/BenediktMagnus/BrainfuckLLVM/issues"
+        "url": "https://github.com/BenediktMagnus/Brainy/issues"
     },
     "bin": {
         "phc": "./bin/main.js"

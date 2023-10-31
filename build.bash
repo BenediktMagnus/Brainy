@@ -3,7 +3,7 @@
 # Enable "strict mode":
 set -euo pipefail
 
-readonly BUILD_DIRECTORY="brainfuck"
+readonly BUILD_DIRECTORY="brainy"
 readonly COMPILER_DIRECTORY="compiler"
 readonly RUNTIME_DIRECTORY="runtime"
 
