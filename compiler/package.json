@@ -2,7 +2,7 @@
     "name": "brainy-compiler",
     "description": "A Brainfuck compiler that utilises LLVM.",
     "author": "Benedikt Magnus",
-    "version": "1.0.0",
+    "version": "1.0.0-dev",
     "license": "MIT",
     "keywords": [
         "Brainfuck",
