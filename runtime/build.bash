@@ -37,7 +37,7 @@ function targetLinuxAmd64
         '-fno-ident'
         '-finhibit-size-directive'
         '-masm=intel'
-        '-O1'
+        '-O2'
         '-c'
         '-o'
     )
