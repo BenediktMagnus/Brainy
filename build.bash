@@ -3,11 +3,11 @@
 # Enable "strict mode":
 set -euo pipefail
 
-readonly BUILD_DIRECTORY="brainy"
+readonly EXECUTABLE_NAME="brainy"
+
+readonly BUILD_DIRECTORY="$EXECUTABLE_NAME"
 readonly COMPILER_DIRECTORY="compiler"
 readonly RUNTIME_DIRECTORY="runtime"
-
-readonly EXECUTABLE_NAME="$COMPILER_DIRECTORY"
 
 readonly THIS_PATH="$(realpath "$(dirname "${0}")")"
 
@@ -22,7 +22,7 @@ trap cleanup EXIT INT TERM QUIT ERR
 
 echo "Building runtime..."
 
-mkdir -p "$COMPILER_DIRECTORY"
+mkdir -p "$BUILD_DIRECTORY"
 
 # Build the runtime:
 "$RUNTIME_DIRECTORY/build.bash" clean
@@ -33,6 +33,7 @@ echo "Preparing packing..."
 # Copy the compiler files:
 mkdir -p "$BUILD_DIRECTORY/src"
 cp -r "$COMPILER_DIRECTORY/src" "$BUILD_DIRECTORY/src"
+cp -r "examples" "$BUILD_DIRECTORY/"
 # TODO: It is a bit ugly to copy every file individually:
 cp "$COMPILER_DIRECTORY/package.json" "$BUILD_DIRECTORY/"
 cp "$COMPILER_DIRECTORY/tsconfig.json" "$BUILD_DIRECTORY/"
@@ -59,6 +60,6 @@ chmod +x "$EXECUTABLE_NAME"
 
 # Pack everything:
 cd ..
-tar -czf "$EXECUTABLE_NAME.tgz" "$COMPILER_DIRECTORY"
+tar -czf "$EXECUTABLE_NAME.tgz" "$BUILD_DIRECTORY"
 
 echo "Build complete."
